@@ -64,37 +64,37 @@ export function Companions() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 leading-tight">
               Choose Your AI Companion
             </h1>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto px-4">
               Select an AI companion to start your video conversation. Each companion has unique expertise and personality.
             </p>
           </div>
 
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="relative max-w-2xl mx-auto">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search companions by name or expertise..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full pl-12 pr-4 py-3 sm:py-4 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all hover:border-slate-600"
               />
             </div>
           </div>
 
           {error && (
-            <div className="mb-8 max-w-2xl mx-auto bg-red-500/10 border border-red-500/50 rounded-lg p-4">
-              <p className="text-red-400 text-center">{error}</p>
+            <div className="mb-8 max-w-2xl mx-auto bg-red-500/10 border border-red-500/50 rounded-lg p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <p className="text-red-400 text-center text-sm sm:text-base">{error}</p>
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredCompanions.map(companion => (
               <CompanionCard
                 key={companion.id}
@@ -104,9 +104,16 @@ export function Companions() {
             ))}
           </div>
 
-          {filteredCompanions.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-slate-400 text-lg">No companions found matching your search.</p>
+          {filteredCompanions.length === 0 && !loading && (
+            <div className="text-center py-12 sm:py-16">
+              <Search className="w-16 h-16 text-slate-700 mx-auto mb-4" />
+              <p className="text-slate-400 text-base sm:text-lg">No companions found matching your search.</p>
+              <button
+                onClick={() => setSearchQuery('')}
+                className="mt-4 text-blue-400 hover:text-blue-300 transition-colors hover:underline"
+              >
+                Clear search
+              </button>
             </div>
           )}
         </div>

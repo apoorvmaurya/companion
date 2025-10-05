@@ -106,7 +106,7 @@ export function VideoCall() {
 
   return (
     <div className="fixed inset-0 bg-slate-900 flex flex-col">
-      <div className="flex-1 relative flex">
+      <div className="flex-1 relative flex flex-col md:flex-row">
         <div className="flex-1 relative">
           <video
             ref={remoteVideoRef}
@@ -117,8 +117,8 @@ export function VideoCall() {
 
           {!remoteStream && (
             <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
-              <div className="text-center">
-                <div className="w-32 h-32 rounded-full bg-slate-700 mx-auto mb-4 flex items-center justify-center">
+              <div className="text-center px-4">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-slate-700 mx-auto mb-4 flex items-center justify-center ring-4 ring-slate-600/50">
                   {companion?.avatar_url && (
                     <img
                       src={companion.avatar_url}
@@ -127,17 +127,17 @@ export function VideoCall() {
                     />
                   )}
                 </div>
-                <p className="text-white text-lg">{companion?.name}</p>
+                <p className="text-white text-base sm:text-lg font-medium">{companion?.name}</p>
               </div>
             </div>
           )}
 
-          <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-sm px-4 py-2 rounded-lg">
-            <p className="text-white font-medium">{companion?.name}</p>
-            <p className="text-slate-400 text-sm">{formatDuration(callDuration)}</p>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-slate-900/80 backdrop-blur-sm px-3 py-2 sm:px-4 rounded-lg shadow-lg">
+            <p className="text-white font-medium text-sm sm:text-base">{companion?.name}</p>
+            <p className="text-slate-400 text-xs sm:text-sm">{formatDuration(callDuration)}</p>
           </div>
 
-          <div className="absolute bottom-24 right-4 w-48 h-36 bg-slate-800 rounded-lg overflow-hidden border-2 border-slate-700">
+          <div className="absolute bottom-20 sm:bottom-24 right-3 sm:right-4 w-32 h-24 sm:w-48 sm:h-36 bg-slate-800 rounded-lg overflow-hidden border-2 border-slate-700 shadow-xl hover:border-blue-500 transition-colors">
             <video
               ref={localVideoRef}
               autoPlay
@@ -147,14 +147,16 @@ export function VideoCall() {
             />
             {isCameraOff && (
               <div className="absolute inset-0 bg-slate-800 flex items-center justify-center">
-                <p className="text-white text-sm">Camera Off</p>
+                <p className="text-white text-xs sm:text-sm">Camera Off</p>
               </div>
             )}
           </div>
         </div>
 
         {isChatOpen && (
-          <ChatPanel onClose={() => setIsChatOpen(false)} roomId={roomId || ''} />
+          <div className="md:w-96 w-full h-64 md:h-full">
+            <ChatPanel onClose={() => setIsChatOpen(false)} roomId={roomId || ''} />
+          </div>
         )}
       </div>
 
