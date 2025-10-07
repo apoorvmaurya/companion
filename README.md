@@ -1,13 +1,13 @@
 # AI Companion Video Call & Streaming Platform
 
-A full-stack web application for real-time video calls with AI companions, featuring WebRTC peer-to-peer streaming, intelligent conversations powered by Google Gemini, voice synthesis via ElevenLabs, and lifelike avatars from D-ID.
+A full-stack web application for real-time video calls with AI companions, featuring WebRTC peer-to-peer streaming, intelligent conversations powered by Google Gemini, voice synthesis via ElevenLabs, lifelike avatars from D-ID, and conversation memory via LangMem.
 
 ## Architecture
 
 - **Frontend**: React + TypeScript + Vite + Tailwind CSS (deployed on Vercel)
 - **Backend**: Python + FastAPI + Socket.IO (deployed on Render)
 - **Database**: Supabase (PostgreSQL + Auth + Storage)
-- **AI Services**: Google Gemini, ElevenLabs, D-ID
+- **AI Services**: Google Gemini, ElevenLabs, D-ID, LangMem
 - **Real-time**: WebRTC + Socket.IO for signaling
 
 ## Features
@@ -15,21 +15,24 @@ A full-stack web application for real-time video calls with AI companions, featu
 - User authentication with Supabase Auth
 - Browse and select AI companions
 - Real-time video calls with WebRTC
-- AI-powered conversations with context retention
-- Voice synthesis for AI responses
-- Animated AI avatars
+- AI-powered conversations with LangMem context retention
+- Voice synthesis for AI responses via ElevenLabs
+- D-ID animated talking avatars
 - Real-time text chat during calls
 - Call recording and playback
 - Responsive design for mobile and desktop
+- WebRTC signaling via Socket.IO
+- Row-level security for data protection
 
 ## Prerequisites
 
-- Node.js 18+ and pnpm
+- Node.js 18+ and npm
 - Python 3.11+
 - Supabase account
 - Google Gemini API key
 - ElevenLabs API key
 - D-ID API key
+- LangMem (auto-initializes)
 - Redis instance (optional, for caching)
 - Twilio account (optional, for TURN server)
 
@@ -44,7 +47,7 @@ cd frontend
 
 2. Install dependencies:
 ```bash
-pnpm install
+npm install
 ```
 
 3. Copy `.env.example` to `.env` and fill in your values:
@@ -54,7 +57,7 @@ cp .env.example .env
 
 4. Start the development server:
 ```bash
-pnpm dev
+npm run dev
 ```
 
 ### Backend Setup
@@ -87,16 +90,22 @@ python main.py
 
 ### Database Setup
 
-The application requires the following Supabase tables. You'll need to create these tables in your Supabase project:
+Run the migration file to create all required tables:
 
-1. **profiles** - User profiles
-2. **companions** - AI companion data
-3. **video_rooms** - Video call rooms
-4. **messages** - Chat messages
-5. **call_recordings** - Recording metadata
-6. **conversation_contexts** - Conversation history
+1. Go to your Supabase project dashboard
+2. Navigate to SQL Editor
+3. Copy the contents of `supabase/migrations/001_initial_schema.sql`
+4. Execute the SQL
 
-Contact the development team or refer to the database schema documentation for detailed table structures.
+This creates the following tables with Row Level Security:
+- **profiles** - User profiles
+- **companions** - AI companion data
+- **video_rooms** - Video call rooms
+- **messages** - Chat messages
+- **call_recordings** - Recording metadata
+- **conversation_contexts** - Conversation history
+
+See `docs/architecture.md` for detailed schema documentation.
 
 ## Environment Variables
 
@@ -105,7 +114,7 @@ Contact the development team or refer to the database schema documentation for d
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 VITE_BACKEND_URL=http://localhost:8000
-VITE_WS_URL=ws://localhost:8000
+VITE_WS_URL=http://localhost:8000
 ```
 
 ### Backend (.env)
@@ -148,10 +157,17 @@ Once the backend is running, visit `http://localhost:8000/docs` for interactive 
 
 ## Key Endpoints
 
+### REST API
 - `GET /api/companions` - List all companions
 - `POST /api/video/rooms` - Create a video room
 - `GET /api/webrtc/config` - Get WebRTC configuration
-- WebSocket events: `join`, `offer`, `answer`, `ice_candidate`, `chat_message`
+- `POST /api/did/streams` - Create D-ID avatar stream
+- `POST /api/video/recordings` - Upload call recording
+
+### WebSocket Events
+- `join`, `offer`, `answer`, `candidate` - WebRTC signaling
+- `chat_message` - Real-time chat
+- `end_call` - End video session
 
 ## Technologies Used
 
@@ -172,7 +188,10 @@ Once the backend is running, visit `http://localhost:8000/docs` for interactive 
 - Supabase Python Client
 - Google Generative AI (Gemini)
 - ElevenLabs
+- D-ID
+- LangMem
 - Redis
+- Pydantic
 
 ## Project Structure
 
@@ -204,10 +223,10 @@ project/
 ### Frontend
 ```bash
 cd frontend
-pnpm dev          # Start dev server
-pnpm build        # Build for production
-pnpm lint         # Run linter
-pnpm typecheck    # Type checking
+npm run dev          # Start dev server
+npm run build        # Build for production
+npm run lint         # Run linter
+npm run typecheck    # Type checking
 ```
 
 ### Backend
@@ -220,6 +239,39 @@ python main.py    # Start dev server
 
 MIT
 
+## Documentation
+
+- **[Architecture Documentation](docs/architecture.md)** - Detailed system architecture, data flows, and technical specifications
+- **[Setup Guide](docs/SETUP.md)** - Comprehensive setup and deployment instructions
+- **[API Documentation](http://localhost:8000/docs)** - Interactive API docs (when backend is running)
+
+## Recent Improvements
+
+### LangMem Integration
+- Conversation memory across sessions
+- Context-aware AI responses
+- User interaction history tracking
+
+### D-ID Avatar Streaming
+- Real-time animated talking avatars
+- WebRTC-based avatar streaming
+- Text-to-avatar speech synthesis
+
+### Enhanced Security
+- Row Level Security on all tables
+- JWT-based authentication
+- Secure WebSocket connections
+- Environment-specific configurations
+
+### Improved Architecture
+- Modular service layer
+- Proper error handling
+- Production-ready configuration
+- Comprehensive documentation
+
 ## Support
 
-For issues and questions, please open an issue on the repository.
+For issues and questions:
+1. Check the documentation in `docs/`
+2. Review the setup guide
+3. Open an issue on the repository
