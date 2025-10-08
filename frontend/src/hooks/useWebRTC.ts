@@ -27,7 +27,7 @@ export function useWebRTC(roomId: string | null) {
 
       peerConnection.current.onicecandidate = (event) => {
         if (event.candidate && roomId) {
-          wsService.emit('ice_candidate', {
+          wsService.emit('candidate', {
             roomId,
             candidate: event.candidate.toJSON()
           });
@@ -222,12 +222,12 @@ export function useWebRTC(roomId: string | null) {
 
     wsService.on('offer', handleOffer);
     wsService.on('answer', handleAnswer);
-    wsService.on('ice_candidate', handleIceCandidate);
+    wsService.on('candidate', handleIceCandidate);
 
     return () => {
       wsService.off('offer', handleOffer);
       wsService.off('answer', handleAnswer);
-      wsService.off('ice_candidate', handleIceCandidate);
+      wsService.off('candidate', handleIceCandidate);
     };
   }, [roomId, handleOffer, handleAnswer, handleIceCandidate]);
 

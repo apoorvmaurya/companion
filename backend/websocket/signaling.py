@@ -66,20 +66,21 @@ async def answer(sid, data):
     return {"success": True}
 
 @sio.event
-async def ice_candidate(sid, data):
+async def candidate(sid, data):
     room_id = data.get("roomId")
     candidate = data.get("candidate")
 
     if not room_id or not candidate:
         return {"error": "Room ID and candidate are required"}
 
-    await sio.emit("ice_candidate", {"candidate": candidate}, room=room_id, skip_sid=sid)
+    await sio.emit("candidate", {"candidate": candidate}, room=room_id, skip_sid=sid)
     return {"success": True}
 
 @sio.event
 async def chat_message(sid, data):
     room_id = data.get("roomId")
     message = data.get("message")
+    user_id = data.get("userId")
 
     if not room_id or not message:
         return {"error": "Room ID and message are required"}
@@ -103,13 +104,14 @@ async def chat_message(sid, data):
     await sio.emit("companion_typing", {}, room=room_id)
 
     try:
-        room_response = supabase.table("video_rooms").select("companion_id").eq("room_id", room_id).single().execute()
+        room_response = supabase.table("video_rooms").select("companion_id, user_id").eq("room_id", room_id).single().execute()
         companion_id = room_response.data.get("companion_id")
+        room_user_id = room_response.data.get("user_id") or user_id
 
         companion_response = supabase.table("companions").select("*").eq("id", companion_id).single().execute()
         companion = companion_response.data
 
-        ai_response = await ai_service.generate_response(message, companion, room_id)
+        ai_response = await ai_service.generate_response(message, companion, room_id, room_user_id)
 
         companion_message = {
             "sender_type": "companion",

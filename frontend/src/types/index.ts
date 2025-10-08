@@ -60,7 +60,7 @@ export interface SignalingEvents {
   join: { roomId: string; userId: string; role: 'user' | 'companion' };
   offer: { roomId: string; sdp: RTCSessionDescriptionInit };
   answer: { roomId: string; sdp: RTCSessionDescriptionInit };
-  ice_candidate: { roomId: string; candidate: RTCIceCandidateInit };
+  candidate: { roomId: string; candidate: RTCIceCandidateInit };
   chat_message: { roomId: string; message: string };
   leave: { roomId: string };
   end_call: { roomId: string };
