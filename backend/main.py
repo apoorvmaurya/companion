@@ -17,9 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(companions.router)
-app.include_router(rooms.router)
-app.include_router(webrtc.router)
+app.include_router(companions.router, prefix="/api/companions", tags=["companions"])
+app.include_router(rooms.router, prefix="/api/video/rooms", tags=["rooms"])
+app.include_router(webrtc.router, prefix="/api/webrtc", tags=["webrtc"])
 app.include_router(did.router)
 app.include_router(recordings.router)
 
