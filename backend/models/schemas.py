@@ -35,8 +35,12 @@ class CompanionResponse(BaseModel):
     voice_id: str
     did_presenter_id: Optional[str] = None
     specialties: List[str]
+    metadata: Optional[dict] = None
     is_active: bool
     created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 class MessageRequest(BaseModel):
     room_id: str

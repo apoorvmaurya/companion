@@ -13,9 +13,19 @@ async function getAuthHeaders() {
 
 export const api = {
   async getCompanions(): Promise<Companion[]> {
-    const response = await fetch(`${API_URL}/api/companions`);
-    if (!response.ok) throw new Error('Failed to fetch companions');
-    return response.json();
+    try {
+      const response = await fetch(`${API_URL}/api/companions`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Failed to fetch companions:', response.status, errorText);
+        throw new Error(`Failed to fetch companions: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching companions:', error);
+      throw error;
+    }
   },
 
   async getCompanion(id: string): Promise<Companion> {

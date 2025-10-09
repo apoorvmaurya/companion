@@ -14,13 +14,21 @@ async def get_companions():
         supabase = get_supabase_client()
         response = supabase.table("companions").select("*").eq("is_active", True).execute()
 
+        if not response.data or len(response.data) == 0:
+            print("No companions found in database, attempting to sync...")
+            try:
+                await sync_companions()
+                response = supabase.table("companions").select("*").eq("is_active", True).execute()
+            except Exception as sync_error:
+                print(f"Error syncing companions: {sync_error}")
+
         if not response.data:
-            await sync_companions()
-            response = supabase.table("companions").select("*").eq("is_active", True).execute()
+            return []
 
         return response.data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error fetching companions: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch companions: {str(e)}")
 
 @router.get("/{companion_id}", response_model=CompanionResponse)
 async def get_companion(companion_id: str):
