@@ -26,15 +26,21 @@ async def create_room(request: CreateRoomRequest, user_id: str = Depends(get_cur
 
         response = supabase.table("video_rooms").insert(room_data).execute()
 
+        if not response.data or len(response.data) == 0:
+            raise HTTPException(status_code=500, detail="Failed to create room")
+
         return response.data[0]
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error creating room: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create room: {str(e)}")
 
 @router.get("/{room_id}", response_model=RoomResponse)
 async def get_room(room_id: str, user_id: str = Depends(get_current_user)):
     try:
         supabase = get_supabase_client()
-        response = supabase.table("video_rooms").select("*").eq("room_id", room_id).single().execute()
+        response = supabase.table("video_rooms").select("*").eq("room_id", room_id).maybeSingle().execute()
 
         if not response.data:
             raise HTTPException(status_code=404, detail="Room not found")
@@ -43,8 +49,11 @@ async def get_room(room_id: str, user_id: str = Depends(get_current_user)):
             raise HTTPException(status_code=403, detail="Not authorized")
 
         return response.data
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error fetching room: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch room: {str(e)}")
 
 @router.post("/{room_id}/end")
 async def end_room(room_id: str, user_id: str = Depends(get_current_user)):

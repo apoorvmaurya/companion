@@ -41,7 +41,11 @@ export const api = {
       headers,
       body: JSON.stringify({ companion_id: companionId })
     });
-    if (!response.ok) throw new Error('Failed to create room');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to create room:', response.status, errorText);
+      throw new Error(`Failed to create room: ${response.status} - ${errorText}`);
+    }
     return response.json();
   },
 
@@ -50,7 +54,11 @@ export const api = {
     const response = await fetch(`${API_URL}/api/video/rooms/${roomId}`, {
       headers
     });
-    if (!response.ok) throw new Error('Failed to fetch room');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to fetch room:', response.status, errorText);
+      throw new Error(`Failed to fetch room: ${response.status} - ${errorText}`);
+    }
     return response.json();
   },
 
@@ -60,12 +68,20 @@ export const api = {
       method: 'POST',
       headers
     });
-    if (!response.ok) throw new Error('Failed to end room');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to end room:', response.status, errorText);
+      throw new Error(`Failed to end room: ${response.status} - ${errorText}`);
+    }
   },
 
   async getWebRTCConfig(): Promise<WebRTCConfig> {
     const response = await fetch(`${API_URL}/api/webrtc/config`);
-    if (!response.ok) throw new Error('Failed to fetch WebRTC config');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to fetch WebRTC config:', response.status, errorText);
+      throw new Error(`Failed to fetch WebRTC config: ${response.status}`);
+    }
     return response.json();
   },
 
@@ -82,6 +98,10 @@ export const api = {
       },
       body: formData
     });
-    if (!response.ok) throw new Error('Failed to upload recording');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to upload recording:', response.status, errorText);
+      throw new Error(`Failed to upload recording: ${response.status}`);
+    }
   }
 };

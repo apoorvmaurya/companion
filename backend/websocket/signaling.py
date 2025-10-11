@@ -104,11 +104,19 @@ async def chat_message(sid, data):
     await sio.emit("companion_typing", {}, room=room_id)
 
     try:
-        room_response = supabase.table("video_rooms").select("companion_id, user_id").eq("room_id", room_id).single().execute()
+        room_response = supabase.table("video_rooms").select("companion_id, user_id").eq("room_id", room_id).maybeSingle().execute()
+        if not room_response.data:
+            print(f"Room not found: {room_id}")
+            return {"success": False, "error": "Room not found"}
+
         companion_id = room_response.data.get("companion_id")
         room_user_id = room_response.data.get("user_id") or user_id
 
-        companion_response = supabase.table("companions").select("*").eq("id", companion_id).single().execute()
+        companion_response = supabase.table("companions").select("*").eq("id", companion_id).maybeSingle().execute()
+        if not companion_response.data:
+            print(f"Companion not found: {companion_id}")
+            return {"success": False, "error": "Companion not found"}
+
         companion = companion_response.data
 
         ai_response = await ai_service.generate_response(message, companion, room_id, room_user_id)
