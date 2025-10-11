@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 
-const WS_URL = import.meta.env.VITE_WS_URL;
+const WS_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
 class WebSocketService {
   private socket: Socket | null = null;
