@@ -34,14 +34,17 @@ async def get_companions():
 async def get_companion(companion_id: str):
     try:
         supabase = get_supabase_client()
-        response = supabase.table("companions").select("*").eq("id", companion_id).single().execute()
+        response = supabase.table("companions").select("*").eq("id", companion_id).maybeSingle().execute()
 
         if not response.data:
             raise HTTPException(status_code=404, detail="Companion not found")
 
         return response.data
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error fetching companion: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch companion: {str(e)}")
 
 @router.post("/sync")
 async def sync_companions():
