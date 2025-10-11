@@ -4,6 +4,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     supabase_url: str
     supabase_service_key: str
+    supabase_jwt_secret: str
     gemini_api_key: str
     elevenlabs_api_key: str
     did_api_key: str
@@ -11,6 +12,7 @@ class Settings(BaseSettings):
     twilio_account_sid: str = ""
     twilio_auth_token: str = ""
     frontend_url: str = "http://localhost:5173"
+    backend_url: str = "http://localhost:8000"
     port: int = 8000
 
     class Config:

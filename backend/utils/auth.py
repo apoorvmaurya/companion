@@ -13,9 +13,9 @@ async def get_current_user(authorization: str = Header(None)) -> str:
 
         payload = jwt.decode(
             token,
-            settings.supabase_service_key,
+            settings.supabase_jwt_secret,
             algorithms=["HS256"],
-            options={"verify_signature": False}
+            audience="authenticated"
         )
 
         user_id = payload.get("sub")
@@ -23,5 +23,6 @@ async def get_current_user(authorization: str = Header(None)) -> str:
             raise HTTPException(status_code=401, detail="Invalid token")
 
         return user_id
-    except JWTError:
+    except JWTError as e:
+        print(f"JWT verification failed: {e}")
         raise HTTPException(status_code=401, detail="Invalid token")
